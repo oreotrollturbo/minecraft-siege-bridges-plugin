@@ -2,6 +2,7 @@ package org.oreo.siegebridge
 
 import SiegeBridePlace
 import org.bukkit.plugin.java.JavaPlugin
+import org.oreo.siegebridge.listeners.BridgeBreakListener
 
 class Siege_bridge : JavaPlugin() {
 
@@ -11,6 +12,7 @@ class Siege_bridge : JavaPlugin() {
         logger.info("My first kotlin plugin  :)")
 
         server.pluginManager.registerEvents(SiegeBridePlace(this),this)
+        server.pluginManager.registerEvents(BridgeBreakListener(this),this)
     }
 
     override fun onDisable() {
