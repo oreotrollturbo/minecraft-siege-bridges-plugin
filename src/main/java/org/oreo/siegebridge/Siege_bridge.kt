@@ -1,10 +1,12 @@
 package org.oreo.siegebridge
 
 import SiegeBridePlace
+import org.bukkit.Material
 import org.bukkit.plugin.java.JavaPlugin
 import org.oreo.siege_ladders.commands.GetSiegeBridge
 import org.oreo.siegebridge.itemManager.ItemManager
 import org.oreo.siegebridge.listeners.BridgeBreakListener
+import sun.jvm.hotspot.opto.Block
 
 class Siege_bridge : JavaPlugin() {
 
@@ -22,6 +24,10 @@ class Siege_bridge : JavaPlugin() {
     }
 
     override fun onDisable() {
-        // Plugin shutdown logic
+        for (bridgeList: MutableList<org.bukkit.block.Block> in listOfBridges){
+            for (bridgeBlock: org.bukkit.block.Block in bridgeList) {
+                bridgeBlock.type = Material.AIR
+            }
+        }
     }
 }
