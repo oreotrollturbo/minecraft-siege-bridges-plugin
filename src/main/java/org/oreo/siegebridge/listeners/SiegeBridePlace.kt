@@ -1,6 +1,7 @@
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -8,15 +9,22 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.oreo.siegebridge.Siege_bridge
+import org.oreo.siegebridge.java.GetWarClass
 
 class SiegeBridePlace(private val plugin: Siege_bridge) : Listener {
 
     @EventHandler
     fun onBridgePlaced(e: PlayerInteractEvent) {
         val act = e.action
+
+        val war = GetWarClass.isWarOn()
+
+
         if (act != Action.LEFT_CLICK_BLOCK) {
             return
         }
+
+
 
         val block = e.clickedBlock ?: return
         val player = e.player
@@ -27,10 +35,13 @@ class SiegeBridePlace(private val plugin: Siege_bridge) : Listener {
         val y = block.y.toDouble()
         val z = block.z.toDouble()
 
-        if (isHoldingGrindstone(player)) {
-            // Start a repeating task
+        if (siegeBridge(player)) {
 
-            for (timer in 1..3 ){
+            if (!war){
+                player.sendMessage("${ChatColor.RED}War is disabled")
+            }
+
+            for (timer in 1..3 ){  // Start a repeating task
                 val checkBlock = placeBlockIndirection(world, x, y, z, timer, facing)
 
                 var blocksTested = 0
@@ -45,6 +56,7 @@ class SiegeBridePlace(private val plugin: Siege_bridge) : Listener {
                 }
             }
 
+            player.itemInHand.amount = player.itemInHand.amount - 1
 
             object : BukkitRunnable() {
                 var i = 1
@@ -79,8 +91,9 @@ class SiegeBridePlace(private val plugin: Siege_bridge) : Listener {
         }
     }
 
-    private fun isHoldingGrindstone(player: Player): Boolean {
-        return player.inventory.itemInMainHand.type == Material.GRINDSTONE
+    private fun siegeBridge(player: Player): Boolean {
+        val mainHand = player.inventory.itemInMainHand
+        return mainHand.type == Material.GRINDSTONE && mainHand.containsEnchantment(Enchantment.LUCK)
     }
 
     private fun placeBlockIndirection(world: World, x: Double, y: Double, z: Double, timer: Int, face: BlockFace): List<Location> {
